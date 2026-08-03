@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './App.css'
-import { extractKeywords, buildSearchQuery } from './lib/keywords'
+import { extractKeywords, buildSearchQuery, isMethodQuestion } from './lib/keywords'
 import { searchRepos, isRateLimitedError } from './lib/github'
 import { analyze, type AnalysisResult, type Verdict } from './lib/analyze'
 
@@ -42,6 +42,7 @@ function App() {
   const [query, setQuery] = useState('')
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null)
   const [remaining, setRemaining] = useState<number | null>(null)
+  const [methodAdvice, setMethodAdvice] = useState<string | null>(null)
 
   const saveToken = (v: string) => {
     setToken(v)
@@ -54,6 +55,14 @@ function App() {
     setStatus('loading')
     setErrorMsg('')
     setAnalysis(null)
+    setMethodAdvice(null)
+
+    // 方法论/问题型需求：GitHub 上没有"轮子"可参考，直接给建议，不调用搜索
+    if (isMethodQuestion(input)) {
+      setStatus('done')
+      setMethodAdvice(input.trim())
+      return
+    }
 
     const kws = extractKeywords(input)
     setKeywords(kws)
@@ -137,6 +146,22 @@ function App() {
           <section className="card loading">
             <span className="spinner" />
             正在搜索 GitHub… 关键词：{keywords.join(', ') || query}
+          </section>
+        )}
+
+        {status === 'done' && methodAdvice && (
+          <section className="card method-card">
+            <div className="method-icon">💡</div>
+            <div>
+              <h2>这个问题不需要找"轮子"</h2>
+              <p>
+                你输入的是「<strong>{methodAdvice}</strong>」，这是一个<strong>方法论/习惯类</strong>问题，
+                不是"要做一个软件"。GitHub 上没有现成的开源项目能直接解决它，硬装工具反而适得其反。
+              </p>
+              <p className="hint">
+                建议：把这类问题拆成「我要做一个 XX 工具来辅助」再来搜，例如把"避免玩手机"改成"做一个 AI 结对编程提醒工具"，工具就能帮你找对应的开源方案了。
+              </p>
+            </div>
           </section>
         )}
 

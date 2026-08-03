@@ -135,6 +135,30 @@ textarea:focus {
   color: #b91c1c;
 }
 
+.method-card {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.method-icon {
+  font-size: 34px;
+  line-height: 1;
+}
+
+.method-card h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: #1e40af;
+}
+
+.method-card p {
+  margin: 0 0 6px;
+  color: #374151;
+}
+
 .loading {
   display: flex;
   align-items: center;
@@ -353,6 +377,16 @@ h3 {
   }
   .loading {
     color: #d1d5db;
+  }
+  .method-card {
+    background: #101a2e;
+    border-color: #1e3a5f;
+  }
+  .method-card h2 {
+    color: #93c5fd;
+  }
+  .method-card p {
+    color: #cbd5e1;
   }
   .ring span {
     background: #171a21;

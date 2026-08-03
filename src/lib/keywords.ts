@@ -425,3 +425,28 @@ export function scoreRepo(repo: { name: string; description: string | null; topi
   }
   return score
 }
+
+// 问题型/方法论型输入的触发词：这类需求 GitHub 上没有"轮子"可参考，应该提示而不是搜索
+const NON_BUILD_PATTERNS: RegExp[] = [
+  /怎么|如何|怎样|咋样|哪些|什么|为什么|是不是|能不能|可不可以/,
+  /避免|提升|学习|习惯|方法|技巧|建议|方式|心态|自律|专注|效率|拖延|戒|坚持|养成/,
+  /(提高|降低|减少|增加)\S*(效率|成本|性能|质量)/,
+]
+
+// 需求类型识别：true = 问题型/方法论型（不需要找轮子），false = 造物型（正常搜索）
+export function isMethodQuestion(input: string): boolean {
+  const text = input.trim()
+  if (!text) return false
+  // 含造物动词 + 明确名词时视为造物型，不误判
+  if (/做|开发|搭建|建|写|制作|实现|构建|生成|创建/.test(text) && DICT_KEY_HIT(text)) {
+    return false
+  }
+  return NON_BUILD_PATTERNS.some((re) => re.test(text))
+}
+
+// 判断输入中是否有词典命中的造物名词
+function DICT_KEY_HIT(text: string): boolean {
+  const lower = text.toLowerCase()
+  return Object.keys(DICT).some((zh) => lower.includes(zh.toLowerCase()))
+}
+
